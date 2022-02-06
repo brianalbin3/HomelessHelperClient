@@ -1,0 +1,10 @@
+.auth-page .non-important-btns-container .enter-code-btn {
+    width: auto;
+}
+
+.resend-code {
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 4px;
+    font-style: oblique;
+}

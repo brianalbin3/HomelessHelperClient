@@ -1,0 +1,9 @@
+.auth-form .forgot-pw-desc {
+    width: 300px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.auth-page .non-important-btns-container .find-email-btn {
+    width: 90px;
+}

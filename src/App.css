@@ -1,0 +1,142 @@
+/* Treating these as global styles */
+.display-none {
+    display: none;
+}
+
+.no-underline {
+    text-decoration: none;
+}
+
+.desktop-only {
+    display: none;
+}
+
+.page-container {
+    width: 100%;
+    height: 100%;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+}
+
+.page {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-left: 4px;
+    padding-right: 4px;
+    width: 100%;
+    height: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.page .page-header {
+    margin-top: 12px;
+    margin-bottom: 10px;
+}
+
+.auth-page-container {
+    width: 100%;
+    height: 100%;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-page {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 42px;
+    padding-left: 4px;
+    padding-right: 4px;
+    width: 100%;
+    height: min-content;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.auth-page .auth-header {
+    margin-top: 8px;
+}
+
+.auth-form {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+}
+
+.auth-form .auth-txt-field {
+    margin-bottom: 16px;
+}
+
+.auth-page .auth-btn {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    min-width: 300px;
+    align-self: center;
+}
+
+.auth-page .auth-err {
+    text-align: center;
+    margin-top: 12px;
+}
+
+div .non-important-btns-container {
+    margin-top: 32px;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.non-important-btns-container .non-important-btn {
+    text-transform: none;
+    width: 140px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+.auth-instructions {
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+@media screen and (min-width: 768px) {
+    .desktop-only {
+        display: block;
+    }
+
+    .page .page-header {
+        margin-top: 12px;
+        margin-bottom: 10px;
+    }
+
+    .auth-page-container {
+        align-items: center;
+    }
+
+    .auth-page {
+        border-radius: 4px;
+        width: 530px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .1), 0 8px 16px rgba(0, 0, 0, .1);
+        margin-top: 0;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .auth-page .auth-header {
+        margin-bottom: 12px;
+    }
+
+    .auth-form {
+        width: 325px;
+    }
+
+    .auth-btn {
+        width: 100%;
+    }
+}

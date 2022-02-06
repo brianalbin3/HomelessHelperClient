@@ -1,0 +1,45 @@
+.find-account-icon-container {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    margin-bottom: 16px;
+}
+
+.find-account-icon-container .find-account-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
+    margin-right: 4px;
+    margin-left: 4px;
+}
+
+.contact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.contact-method {
+    font-weight: bold;
+    color: #222;
+}
+
+.contact-detail {
+    font-size: 10px;
+    color: #444;
+}
+
+.radio-container {
+    width: 48px;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-form .contact-divider {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.contact-divider:last-of-type {
+    margin-bottom: 8px;
+}

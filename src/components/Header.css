@@ -1,0 +1,75 @@
+.app-bar-container {
+    display: flex;
+}
+
+/* TODO: Do I need this */
+.title {
+    flex-grow: 1;
+}
+
+.title:after {
+    content: 'RoboNurse';
+}
+
+nav {
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
+
+.icon-container {
+    width: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    margin-right: 8px;
+    height: 100%;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.icon-container .icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    margin-bottom: 2px;
+    color: white;
+}
+
+.icon-description {
+    color: white;
+    font-family: 'Roboto';
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.icon-container:hover, .icon-container-active {
+    background-color: white;
+}
+
+.icon-container:hover .icon, .icon-container-active .icon {
+    color: #009688;
+}
+
+.icon-container:hover .icon-description, .icon-container-active .icon-description {
+    color: #009688;
+}
+
+@media screen and (max-width: 768px) {
+    .title:after {
+        content: 'RN';
+    }
+
+    .icon-container {
+        width: 48px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    .icon-description {
+        display: none;
+    }
+}

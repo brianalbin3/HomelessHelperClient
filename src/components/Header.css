@@ -8,7 +8,7 @@
 }
 
 .title:after {
-    content: 'RoboNurse';
+    content: 'Homeless Helper';
 }
 
 nav {
@@ -60,7 +60,7 @@ nav {
 
 @media screen and (max-width: 768px) {
     .title:after {
-        content: 'RN';
+        content: 'HH';
     }
 
     .icon-container {

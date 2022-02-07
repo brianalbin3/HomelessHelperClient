@@ -11,9 +11,9 @@ function Splash() {
     return (
       <div className="landing-page-container">
         <div className="info-box">
-          <Typography className="splash-header" color="primary" variant="h1">RoboNurse</Typography>
-          <div className="description">Never forget to take your medicines again with our medicine reminder calls.</div>
-          <Link className="no-underline" to="/features/medicine">
+          <Typography className="splash-header" color="primary" variant="h1">Homeless Helper</Typography>
+          <div className="description">Helping you organize your missionary work for the homeless one page at a time.</div>
+          <Link className="no-underline" to="/features/schedule">
             <Button variant="contained" color="primary" className="start-btn">Get Started</Button>
           </Link>
         </div>

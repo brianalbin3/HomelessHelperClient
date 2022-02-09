@@ -3,6 +3,8 @@ import React from 'react';
 
 import Header from './Header';
 
+import './Main.css';
+
 interface MainProps {
   children: any; /* ReactChild | ReactChildren; */
 }
@@ -19,7 +21,7 @@ display: flex;
 flex-direction: column;
 height: 100%;
       */
-      <div>
+      <div className="main-container">
         <Header/>
         <main>{this.props.children}</main> 
       </div>

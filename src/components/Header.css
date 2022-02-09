@@ -1,5 +1,6 @@
 .app-bar-container {
     display: flex;
+    height: 64px;
 }
 
 /* TODO: Do I need this */
@@ -59,6 +60,10 @@ nav {
 }
 
 @media screen and (max-width: 768px) {
+    .app-bar-container {
+        height: 56px;
+    }
+
     .title:after {
         content: 'HH';
     }

@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+  }
+
 /* Treating these as global styles */
 .display-none {
     display: none;

@@ -1,0 +1,100 @@
+.view-event-dialog {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1200;
+    position: fixed;
+    background-color: white;
+    height: 100%; /* TODO: Do I need this? */
+}
+
+.view-dialog-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    background-color: #009688;
+    height: 77px;
+}
+
+.primary-header {
+    font-size: 24px;
+    margin-bottom: 6px;
+    color: white;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    height: 50px;
+    white-space: nowrap;
+}
+
+.secondary-header {
+    font-size: 12px;
+    color: white;
+}
+
+.location-img-container {
+    height: 171px;
+}
+
+.location-img {
+    max-height: 100%;
+    width: 100%;
+}
+
+.view-dialog-body {
+    padding: 14px;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 248px);
+    justify-content: space-between;
+    overflow-y: auto;
+}
+
+.event-description {
+    color: rgba(0, 0, 0, 0.54);
+}
+
+
+.actions-container .delete-event-icon, .actions-container .edit-event-icon, .actions-container .close-event-dialog {
+    color:#009688;
+}
+
+.actions-container .edit-event-icon, .actions-container .delete-event-icon {
+    margin-right: 8px;
+}
+
+/* TODO: This looks a little funky */
+/* Iphone 5 and smaller */ 
+@media screen and (max-width: 340px) {
+    .edit-txt {
+        display: none;
+    }
+
+    .delete-txt {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .grayout {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        z-index: 1100;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.5)
+    }
+
+    .view-event-dialog {
+        position: initial;
+        height: 500px;
+        width: 350px;
+    }
+}

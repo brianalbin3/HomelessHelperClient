@@ -1,0 +1,15 @@
+.page .add-event {
+    position: fixed;
+    bottom: 24px;
+    /* right: 24px; */
+}
+
+.spinner-container {
+    margin-top: 64px;
+}
+
+@media screen and (min-width: 768px) {
+    /* .add-event:after {
+        content: 'Add New Medicine';
+    } */
+}

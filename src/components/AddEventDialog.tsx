@@ -12,8 +12,6 @@ import TextField from '@material-ui/core/TextField';
 
 import { MaterialUiPickersDate } from '@material-ui/pickers/typings/date';
 
-import { SnackbarCloseReason } from '@material-ui/core/Snackbar/Snackbar';
-
 import IconButton from '@material-ui/core/IconButton';
 
 import CloseIcon from '@material-ui/icons/Close';
@@ -44,8 +42,6 @@ import EventIcon from '@material-ui/icons/Event';
 
 import { InputAdornment } from '@material-ui/core';
 
-import Snackbar from '@material-ui/core/Snackbar';
-
 import './AddEventDialog.css';
 
 type AddEventDialogState = {
@@ -53,7 +49,7 @@ type AddEventDialogState = {
     startTime: MaterialUiPickersDate | null,
     endTime: MaterialUiPickersDate | null,
     date: MaterialUiPickersDate | null,
-    successSnackbarOpen: boolean,
+    description: string | undefined,
     submitPressed: boolean,
     internalServerError: boolean
 }
@@ -74,7 +70,7 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
             startTime: null,
             endTime: null,
             date: null,
-            successSnackbarOpen: false,
+            description: undefined,
             submitPressed: false,
             internalServerError: false
      };
@@ -83,10 +79,9 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
         this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
         this.handleEndTimeChange = this.handleEndTimeChange.bind(this);
         this.handleDateChange = this.handleDateChange.bind(this);
+        this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleUndo = this.handleUndo.bind(this);
-        this.handleClose = this.handleClose.bind(this);
     }
 
     handleTitleChange(e: any) {
@@ -104,6 +99,11 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
 
     handleDateChange(date: MaterialUiPickersDate | null) {
         this.setState({ date: date});
+    }
+
+    handleDescriptionChange(e: any) {
+        const description: string = e.target.value;
+        this.setState({description});
     }
 
     // TODO: Correct type
@@ -163,7 +163,7 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
 
         this.setState({submitPressed: true});
 
-        const { title, startTime, endTime, date } = this.state;
+        const { title, startTime, endTime, date, description } = this.state;
 
 
         if ( !title || !date || !startTime || !endTime || !this.endTimeIsValid() ) {
@@ -181,18 +181,15 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
         const endDateAndTime: any = date.set({hour: endHours, minute: endMinutes});
 
         try {
-            let response = await eventAPI.createEvent({ title, start: startDateAndTime.toJSDate(), end: endDateAndTime.toJSDate() });
+            let response = await eventAPI.createEvent({ title, start: startDateAndTime.toJSDate(), end: endDateAndTime.toJSDate(), description });
+            
             let event = response.data;
-
-            // TODO: Should really be done in AddEventDialog
             event.start = DateTime.fromISO(event.start).toJSDate();
             event.end = DateTime.fromISO(event.end).toJSDate();
-
-            // TODO: Type
+        
             this.props.onEventAdded(event);
         }
         catch ( error ) {
-            console.error("brian in error")
             if ( error.response.status === 500 ) {
                 this.setState({internalServerError: true});
             }
@@ -202,25 +199,13 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
         }
     }
 
-    handleUndo(event: React.SyntheticEvent<any>) {
-        this.setState({successSnackbarOpen: false})
-    }
-
-    handleClose(event: React.SyntheticEvent<any>, reason?: SnackbarCloseReason) {
-        // if (reason === 'clickaway') { // TODO: Do I want it to close when I click elsewhere on the screen?
-        //   return;
-        // }
-
-        this.setState({successSnackbarOpen: false})
-    }
-
     hasInternalServerError(): boolean {
         return this.state.internalServerError;
     }
 
 
     render() {
-        const { startTime, endTime, date, successSnackbarOpen } = this.state;
+        const { startTime, endTime, date } = this.state;
 
         // TODO: Async autocomplete for medicine name
         //https://codesandbox.io/s/wj0r6?file=/demo.tsx
@@ -233,7 +218,7 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
                     </div>
                     <div className="dialog-body">
                         <div className="dialog-form">
-                            <TextField error={this.titlehasErrorTxt()} onChange={this.handleTitleChange} className="dialog-txt-field" label="Title" variant="filled" helperText="Enter the title of the outreach event" />
+                            <TextField error={this.titlehasErrorTxt()} onChange={this.handleTitleChange} className="dialog-txt-field" label="Title" variant="filled" helperText="Enter the title of the outreach event" inputProps={{ maxLength: 64 }} />
 
                             <MuiPickersUtilsProvider utils={LuxonUtils}>
                                 <DatePicker
@@ -295,6 +280,16 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
 
                             </MuiPickersUtilsProvider>
 
+                            <TextField
+                                label="Description"
+                                multiline
+                                rows={4}
+                                onChange={this.handleDescriptionChange}
+                                helperText="Enter the description of this event"
+                                variant="filled"
+                                inputProps={{ maxLength: 2048 }}
+                            />
+
                             <FormHelperText className={`${this.hasInternalServerError() ? "" : "display-none"}`} error={true}>Uh-oh! A problem occured. Please refresh the page and try again.</FormHelperText>
                         </div>
                     </div>
@@ -303,21 +298,6 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
                         <Button color="primary" className="dialog-btn" onClick={ this.handleSubmit } variant="contained" size="medium">Add</Button>
                     </div>
                 </div>
-
-                <Snackbar
-                    open={successSnackbarOpen}
-                    autoHideDuration={6000}
-                    onClose={this.handleClose}
-                    message="Event Added"
-                    action={
-                        <React.Fragment>
-                            <Button color="secondary" size="small" onClick={this.handleUndo}>UNDO</Button>
-                            <IconButton size="small" aria-label="close" color="secondary" onClick={this.handleClose}>
-                                <CloseIcon fontSize="small" />
-                            </IconButton>
-                        </React.Fragment>
-                    }
-                />
             </div>
         );
     }

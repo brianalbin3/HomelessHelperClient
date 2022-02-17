@@ -11,3 +11,7 @@ export const getEvents = async () => {
 export const createEvent = async (event: Event) => {
     return axios.post('/api/events', event);
 }
+
+export const deleteEvent = (id: number) => {
+    return axios.delete(`/api/events/${id}`);
+}

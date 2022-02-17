@@ -66,6 +66,10 @@
     margin-right: 8px;
 }
 
+.actions-container .delete-err {
+    margin-top: 12px;
+}
+
 /* TODO: This looks a little funky */
 /* Iphone 5 and smaller */ 
 @media screen and (max-width: 340px) {

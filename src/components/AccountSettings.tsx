@@ -52,7 +52,7 @@ class AccountSettings extends React.Component<AccountSettingsProps, AccountSetti
                 <div className="page">
                     <Typography className="page-header" color="primary" variant="h3">Account Settings</Typography>
 
-                    <div style={{width: '100%'}}>
+                    <div className="account-settings-form">
                         <div className="field-container">
                             <div className="field-name">First Name</div>
 
@@ -87,6 +87,21 @@ class AccountSettings extends React.Component<AccountSettingsProps, AccountSetti
                             <div className="field-name">Email</div>
                             
                             <div className="field-value">brianalbin3taco@gmail.com</div>
+
+                            <div className="edit-field-icon-btn-container">
+                                <IconButton className="edit-field-icon-btn" aria-label="edit" disabled color="primary">
+                                    <EditIcon className="edit-field-icon" />
+                                </IconButton>
+                                <div className="edit-label">Change</div>
+                            </div>
+                        </div>
+
+                        <Divider />
+
+                        <div className="field-container"> 
+                            <div className="field-name">Phone</div>
+                            
+                            <div className="field-value">(410) 917-6440</div>
 
                             <div className="edit-field-icon-btn-container">
                                 <IconButton className="edit-field-icon-btn" aria-label="edit" disabled color="primary">

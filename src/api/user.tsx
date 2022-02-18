@@ -31,3 +31,7 @@ export const changePassword = (email: string, password: string, resetCode: strin
         resetCode
     });
 }
+
+export const getCurrentUser = () =>  {
+    return axios.get('/api/users/me');
+}

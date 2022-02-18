@@ -54,8 +54,8 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
 
         this.state = { 
             currentEvent: null,
-            addEventDialogOpen:
-            false, events: [],
+            addEventDialogOpen: false,
+            events: [],
             eventsLoaded: false,
             errorLoadingEvents: false,
             deleteEventSnackbarOpen: false,

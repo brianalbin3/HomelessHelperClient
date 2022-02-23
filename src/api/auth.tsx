@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
 import Cookies from 'universal-cookie';
 
-export const register = (email: string, password: string): Promise<AxiosResponse<any>> => {
+export const register = (email: string, password: string, securityQuestionAnswer: string): Promise<AxiosResponse<any>> => {
     return axios.post('/api/users', {
-        email, password
+        email, password, securityQuestionAnswer
     });
 }
 

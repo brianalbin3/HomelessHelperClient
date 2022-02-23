@@ -13,14 +13,17 @@ import { AuthContextConsumer } from '../contexts/authContext';
 
 
 import { Link } from 'react-router-dom';
+import { triggerAsyncId } from 'async_hooks';
 
 type RegisterState = {
     email: string,
     password: string,
     passwordIsTouched: boolean,
+    securityQuestionAnswer: string,
     submitIsTouched: boolean,
     emailIsTaken: boolean,
-    internalServerError: boolean
+    internalServerError: boolean,
+    unauthorizedError: boolean,
 }
 
 type RegisterProps = {
@@ -31,10 +34,11 @@ class Register extends React.Component<RegisterProps, RegisterState> {
     constructor(props: RegisterProps) {
         super(props);
 
-        this.state = { email: '', password: '', passwordIsTouched: false, submitIsTouched: false, emailIsTaken: false, internalServerError: false };
+        this.state = { email: '', password: '',  passwordIsTouched: false, securityQuestionAnswer: '', submitIsTouched: false, emailIsTaken: false, internalServerError: false, unauthorizedError: false };
         
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
+        this.handleSecurityQuestionAnswerChange = this.handleSecurityQuestionAnswerChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this); 
     }
 
@@ -106,12 +110,18 @@ class Register extends React.Component<RegisterProps, RegisterState> {
         return 'Include a letter, number, and special character';
     }
 
+    handleSecurityQuestionAnswerChange(e: any) {
+        const answer: string = e.target.value;
+
+        this.setState({securityQuestionAnswer: answer});
+    }
+
     hasInternalServerError(): boolean {
         return this.state.internalServerError;
     }
 
     async handleSubmit(callback: any) {
-        const { email, password } = this.state;
+        const { email, password, securityQuestionAnswer } = this.state;
 
         this.setState({submitIsTouched: true, internalServerError: false});
 
@@ -120,7 +130,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
         }
 
         try {
-            await auth.register(email,password);
+            await auth.register(email, password, securityQuestionAnswer);
             
             callback();
    
@@ -133,6 +143,9 @@ class Register extends React.Component<RegisterProps, RegisterState> {
             else if ( error.response.status === 500 ) {
                 this.setState({internalServerError: true});
             }
+            else if ( error.response.status === 401 ) {
+                this.setState({unauthorizedError: true});
+            }
             else {
                 console.error('Unhandled error'); // TODO: Handle this
             }
@@ -140,6 +153,8 @@ class Register extends React.Component<RegisterProps, RegisterState> {
     }
 
     render(): JSX.Element {
+        const { unauthorizedError } = this.state;
+
         return (
             <div className="auth-page-container">
                 <div className="auth-page">
@@ -147,12 +162,14 @@ class Register extends React.Component<RegisterProps, RegisterState> {
                     <form className="auth-form">
                         <TextField onChange={this.handleEmailChange} name="email" className="auth-txt-field" label="Email" variant="filled" error={this.emailHasError() || this.state.emailIsTaken} helperText={this.getEmailHelperText()}/>
                         <PasswordInput inputProps={{ maxLength: 32 }} onChange={this.handlePasswordChange} className="auth-txt-field" label="Password" error={this.passwordHasError()} helperText={this.getPasswordHelperText()} />
+                        <TextField onChange={this.handleSecurityQuestionAnswerChange} className="auth-txt-field" label="Pastor's First Name" variant="filled" helperText="Enter the pastor's first name"/>
                         <AuthContextConsumer>
                         {context => (
                             <Button onClick={e => this.handleSubmit(context.login)} className="auth-btn" variant="contained" color="primary" size="medium">Register</Button>
                         )}
                         </AuthContextConsumer>
                         <FormHelperText className={`auth-err ${this.hasInternalServerError() ? "" : "display-none"}`} error={true}>Uh-oh! A problem occured. Please refresh the page and try again.</FormHelperText>
+                        <FormHelperText className={`auth-err ${unauthorizedError ? "" : "display-none"}`} error={true}>That is NOT the pastor's name. Are you SURE you're from our church?</FormHelperText>
                         <div className="non-important-btns-container">
                             <Link className="no-underline" to="/login">
                                 <Button className="already-registered-btn non-important-btn" color="primary">Already Have an Account?</Button>

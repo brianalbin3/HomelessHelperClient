@@ -14,9 +14,6 @@ import { AuthContextConsumer } from '../contexts/authContext';
 
 import { Link } from 'react-router-dom';
 
-
-import './Register.css';
-
 type RegisterState = {
     email: string,
     password: string,

@@ -8,8 +8,7 @@ type MapComponentProps = {
 
 }
 
-// TODO: Should {} be MapComponentProps
-class MapComponent extends React.Component<{}, MapComponentState> {
+class MapComponent extends React.Component<MapComponentProps, MapComponentState> {
     constructor(props: MapComponentProps) {
         super(props);
     }

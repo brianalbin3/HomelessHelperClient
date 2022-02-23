@@ -3,7 +3,7 @@ interface User {
     phoneNumber: string,
     email: string,
     nameFirst: string,
-    nameLast?: string,
+    nameLast: string,
 }
 
 export default User;

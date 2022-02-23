@@ -16,6 +16,8 @@ import { DateTime } from 'luxon';
 
 import FormHelperText from '@material-ui/core/FormHelperText';
 
+import Event from '../models/Event';
+
 
 import {
   MuiPickersUtilsProvider,
@@ -30,35 +32,42 @@ import { InputAdornment } from '@material-ui/core';
 
 import './AddEventDialog.css';
 
-type AddEventDialogState = {
+type EditEventDialogState = {
     title: string | null,
     startTime: MaterialUiPickersDate | null,
     endTime: MaterialUiPickersDate | null,
     date: MaterialUiPickersDate | null,
     description: string | undefined,
     submitPressed: boolean,
-    internalServerError: boolean
+    internalServerError: boolean,
 }
 
-type AddEventDialogProps = {
+type EditEventDialogProps = {
+    event: Event;
     onCancel: () => void;
-    onEventAdded: (event: any) => void;
+    onEventUpdated: (event: Event) => void;
 }
 
-class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialogState> {
+class EditEventDialog extends React.Component<EditEventDialogProps, EditEventDialogState> {
 
-    constructor(props: AddEventDialogProps) {
+    constructor(props: EditEventDialogProps) {
         super(props);
 
+        const { title, start, end, description } = this.props.event;
+
+       const utcDate: DateTime = DateTime.fromJSDate(start).setZone('America/New_York');
+       const utcStartTime: DateTime = DateTime.fromJSDate(start).setZone('America/New_York');
+       const utcEndTime: DateTime = DateTime.fromJSDate(end).setZone('America/New_York');
+
         this.state = {
-            title: '',
-            startTime: null,
-            endTime: null,
-            date: null,
-            description: undefined,
+            title: title,
+            startTime: utcStartTime,
+            endTime: utcEndTime,
+            date: utcDate,
+            description: description,
             submitPressed: false,
             internalServerError: false
-     };
+        };
 
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleStartTimeChange = this.handleStartTimeChange.bind(this);
@@ -145,6 +154,7 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
 
         this.setState({submitPressed: true});
 
+        const id: number = this.props.event.id as number;
         const { title, startTime, endTime, date, description } = this.state;
 
         if ( !title || !date || !startTime || !endTime || !this.endTimeIsValid() ) {
@@ -161,20 +171,20 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
         let endDateAndTime: DateTime = date.set({hour: endHours, minute: endMinutes}).setZone('America/New_York');
 
         try {
-            let response = await eventAPI.createEvent({ title, start: startDateAndTime.toJSDate(), end: endDateAndTime.toJSDate(), description });
-            
-            let event = response.data;
-            event.start = DateTime.fromISO(event.start).toJSDate();
-            event.end = DateTime.fromISO(event.end).toJSDate();
-        
-            this.props.onEventAdded(event);
+
+            let event: Event = { id, title, start: startDateAndTime.toJSDate(), end: endDateAndTime.toJSDate(), description };
+
+            await eventAPI.updateEvent(event);
+
+            this.props.onEventUpdated(event);
+
         }
         catch ( error ) {
+
             if ( error.response.status === 500 ) {
                 this.setState({internalServerError: true});
             }
             else {
-                console.log("error=",error)
                 console.error('Unhandled error'); // TODO: Handle this
             }
         }
@@ -184,19 +194,18 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
         return this.state.internalServerError;
     }
 
-
     render() {
-        const { startTime, endTime, date } = this.state;
+        const { title, startTime, endTime, date, description } = this.state;
         
         return (
             <div className="grayout">
                 <div className="add-event-dialog">
                     <div className="dialog-header">
-                        <Typography className="dialog-title" variant="h4">Add Event</Typography>
+                        <Typography className="dialog-title" variant="h4">Edit Event</Typography>
                     </div>
                     <div className="dialog-body">
                         <div className="dialog-form">
-                            <TextField error={this.titlehasErrorTxt()} onChange={this.handleTitleChange} className="dialog-txt-field" label="Title" variant="filled" helperText="Enter the title of the outreach event" inputProps={{ maxLength: 64 }} />
+                            <TextField value={title} error={this.titlehasErrorTxt()} onChange={this.handleTitleChange} className="dialog-txt-field" label="Title" variant="filled" helperText="Enter the title of the outreach event" inputProps={{ maxLength: 64 }} />
 
                             <MuiPickersUtilsProvider utils={LuxonUtils}>
                                 <DatePicker
@@ -259,6 +268,7 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
                             </MuiPickersUtilsProvider>
 
                             <TextField
+                                value={description}
                                 label="Description"
                                 multiline
                                 rows={4}
@@ -273,7 +283,7 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
                     </div>
                     <div className="dialog-actions">
                         <Button color="primary" className="dialog-btn" onClick={ this.handleCancel } variant="contained" size="medium">Cancel</Button>
-                        <Button color="primary" className="dialog-btn" onClick={ this.handleSubmit } variant="contained" size="medium">Add</Button>
+                        <Button color="primary" className="dialog-btn" onClick={ this.handleSubmit } variant="contained" size="medium">Update</Button>
                     </div>
                 </div>
             </div>
@@ -281,4 +291,4 @@ class AddEventDialog extends React.Component<AddEventDialogProps, AddEventDialog
     }
 }
 
-export default AddEventDialog;
+export default EditEventDialog;

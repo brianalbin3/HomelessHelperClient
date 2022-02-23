@@ -10,9 +10,13 @@
 .field-container {
     display: flex;
     width: 100%;
-    height: 40px;
+    /* height: 40px; */
     align-items: center;
     justify-content: space-evenly;
+}
+
+.field-container-highlighted {
+    background-color: #EEEEEE;
 }
 
 
@@ -26,12 +30,15 @@
     overflow: hidden;
 
 }
+
 .field-value {
     font-size: 16px;
     width: calc(100% - 111px); /* 100% - 75px - 36px */
     text-overflow: ellipsis;
     overflow: hidden;
     text-align: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .edit-field-icon-btn-container {
@@ -63,6 +70,17 @@
     font-size: 10px;
 }
 
+.save-cancel-btns-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logout-btn {
+    width: 100%;
+}
+
 @media screen and (min-width: 768px) {
     .account-settings-form {
         width: 530px;
@@ -89,10 +107,14 @@
     }
 
     .edit-field-icon-btn-container {
-
+        width: 56px;
     }
 
     .edit-label {
         display: block;
+    }
+
+    .logout-btn {
+        width: 320px;
     }
 }

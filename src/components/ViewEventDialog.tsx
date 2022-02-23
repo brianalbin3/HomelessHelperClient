@@ -10,7 +10,6 @@ import { DateTime } from 'luxon';
 
 import * as eventAPI from '../api/event';
 
-import IconButton from '@material-ui/core/IconButton';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CloseIcon from '@material-ui/icons/Close';
@@ -22,6 +21,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 type ViewEventDialogProps = {
     event: Event
     onCancel: () => void;
+    onEdit: (id: number) => void;
     onDelete: (id: number) => void;
 }
 
@@ -41,16 +41,23 @@ class ViewEventDialog extends React.Component<ViewEventDialogProps, ViewEventDia
         };
 
         this.handleCancel = this.handleCancel.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
     }
 
-    // TODO: Correct type
-    handleCancel(e: any) {
+    handleCancel(/*e: React.MouseEventHandler<HTMLButtonElement>*/) {
         this.props.onCancel();
     }
 
+    handleEdit() {
+        if ( this.props.event ) {
+            const { id } = this.props.event;
+            this.props.onEdit(id as number);
+        }
+    }
+
     async handleDelete() {
-        const id: any = this.props.event.id;
+        const id: number = this.props.event.id as number;
         try {
             await eventAPI.deleteEvent(id);
 
@@ -95,7 +102,7 @@ class ViewEventDialog extends React.Component<ViewEventDialogProps, ViewEventDia
                             <Button onClick={this.handleDelete } className="delete-event-icon" variant="outlined" endIcon={<DeleteIcon color="primary" />}>
                                 <div className="delete-txt">Delete</div>
                             </Button>
-                            <Button className="edit-event-icon" variant="outlined" endIcon={<EditIcon color="primary" />}>
+                            <Button onClick={ this.handleEdit } className="edit-event-icon" variant="outlined" endIcon={<EditIcon color="primary" />}>
                                 <div className="edit-txt">Edit</div>
                             </Button>
                             <Button onClick={ this.handleCancel } className="close-event-dialog" variant="outlined" endIcon={<CloseIcon color="primary" />}>Done</Button>
@@ -105,9 +112,6 @@ class ViewEventDialog extends React.Component<ViewEventDialogProps, ViewEventDia
                         </div>
                     </div>
                 </div>
-                
-
-
 
             </div>
         );

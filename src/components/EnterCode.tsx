@@ -93,7 +93,7 @@ class EnterCode extends React.Component<EnterCodeProps, EnterCodeState> {
         return !this.codeIsValid();
     }
       
-    async handleSubmit(e: any) {
+    async handleSubmit(e: React.MouseEvent<HTMLElement>) {
         this.setState({submitIsTouched: true});
 
         if ( !this.codeIsValid() ) {

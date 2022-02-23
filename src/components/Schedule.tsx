@@ -29,21 +29,23 @@ import Event from '../models/Event';
 
 import './Schedule.css';
 
-// TODO: rename this maybe?
 import * as eventAPI from '../api/event';
 
 import Snackbar from '@material-ui/core/Snackbar';
+import EditEventDialog from './EditEventDialog';
 
 
 type ScheduleProps = {};
 type ScheduleState = {
     currentEvent: Event | null,
     addEventDialogOpen: boolean,
-    events: any,
+    events: Event[],
     eventsLoaded: boolean,
     errorLoadingEvents: boolean,
     deleteEventSnackbarOpen: boolean,
     successAddEventSnackbarOpen: boolean,
+    editEventDialogEvent: Event | null,
+    updateEventSnackbarOpen: boolean
 };
 
 
@@ -53,24 +55,33 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
         super(props);
 
         this.state = { 
-            currentEvent: null,
+            currentEvent: null, // Not null to open viewEventDialog. TODO: refactor this
             addEventDialogOpen: false,
             events: [],
             eventsLoaded: false,
             errorLoadingEvents: false,
             deleteEventSnackbarOpen: false,
-            successAddEventSnackbarOpen: false
+            successAddEventSnackbarOpen: false,
+            editEventDialogEvent: null,
+            updateEventSnackbarOpen: false
             
         };
+
+        // TODO: These are absolutely in no order
 
         this.eventClicked = this.eventClicked.bind(this);
 
         this.eventDeleted = this.eventDeleted.bind(this);
 
+        this.openEditDialog = this.openEditDialog.bind(this);
+        this.closeEditEventDialog = this.closeEditEventDialog.bind(this);
+
         this.eventAdded = this.eventAdded.bind(this);
 
         this.openViewEventDialog = this.openViewEventDialog.bind(this);
         this.closeViewEventDialog = this.closeViewEventDialog.bind(this);
+        this.eventUpdated = this.eventUpdated.bind(this);
+        this.handleCloseUpdateEventSnackbar = this.handleCloseUpdateEventSnackbar.bind(this);
 
         this.openAddEventDialog = this.openAddEventDialog.bind(this);
         this.closeAddEventDialog = this.closeAddEventDialog.bind(this);
@@ -88,17 +99,15 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
 
     async loadEvents() {
         try {
-            // TODO: Types
-            var result = await eventAPI.getEvents();
-            var events: any = result.data;
+            let result = await eventAPI.getEvents();
+            let events: any = result.data;
 
-            //TODO: Type
             events.forEach((event: any) => {
                 event.start = DateTime.fromISO(event.start).toJSDate();
                 event.end = DateTime.fromISO(event.end).toJSDate();
             });
 
-            this.setState({events , eventsLoaded: true });
+            this.setState({events, eventsLoaded: true });
         }
         catch(e) {
             console.error("error=",e)
@@ -144,15 +153,45 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
 
     eventDeleted(id: number) {
         let events: Event[] = this.state.events;
-        events = events.filter(event => event.id != id);
+        events = events.filter(event => event.id !== id);
 
         this.setState({events, deleteEventSnackbarOpen: true});
 
         this.closeViewEventDialog();
     }
 
-    eventAdded(event: Event) {  // TODO: Type
-        let events: any = this.state.events;
+    openEditDialog(id: number) {
+        let events: Event[] = this.state.events;
+        let event: Event = events.find((event) => event.id === id) as Event;
+
+        this.closeViewEventDialog();
+
+        // TODO: This should be in a different function
+        this.setState({ editEventDialogEvent: event});
+    }
+
+    closeEditEventDialog() {
+        this.setState({editEventDialogEvent: null});
+    }
+
+    eventUpdated(updatedEvent: Event) {
+        let events: Event[] = this.state.events;
+        let index: number = events.findIndex((event) => event.id == updatedEvent.id);
+
+        events[index] = updatedEvent;
+
+        this.setState({events, updateEventSnackbarOpen: true });
+
+        this.closeEditEventDialog();
+        this.openViewEventDialog(updatedEvent);
+    }
+
+    handleCloseUpdateEventSnackbar() {
+        this.setState({updateEventSnackbarOpen: false});
+    }
+
+    eventAdded(event: Event) {
+        let events: Event[] = this.state.events;
         events.push(event);
         
         this.setState({events, successAddEventSnackbarOpen: true})
@@ -162,20 +201,19 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
 
     render() {
         const localizer = luxonLocalizer(DateTime);
-        var that: any = this;
 
-        var events = this.state.events;
+        let events: Event[] = this.state.events;
 
-        const { successAddEventSnackbarOpen, deleteEventSnackbarOpen, currentEvent, addEventDialogOpen, eventsLoaded, errorLoadingEvents } = this.state;
+        const { successAddEventSnackbarOpen, deleteEventSnackbarOpen, currentEvent, addEventDialogOpen, eventsLoaded, errorLoadingEvents, editEventDialogEvent, updateEventSnackbarOpen } = this.state;
         
-        function calendar() {
+        const calendar = () => {
             if (eventsLoaded) {
                 return (
                     <Calendar
                     localizer={localizer}
                     events={events}
                     style={{ height: 500 }}
-                    onSelectEvent={that.eventClicked}
+                    onSelectEvent={this.eventClicked}
                     />
                 );
             }
@@ -183,7 +221,7 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
             return (null);
         }
 
-        function spinner() {
+        const spinner = () => {
             if ( !eventsLoaded && !errorLoadingEvents) {
                 return (
                     <div className="spinner-container">
@@ -195,29 +233,39 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
             return (null);
         }
 
-        function loadingError() {
+        const loadingError = () => {
             if ( errorLoadingEvents ) {
                 return (
-                    <ErrorBox message="Couldn't load events!" />
+                    <ErrorBox message="Couldn't load events! Try refreshing the page." />
                 );
             }
 
             return (null);
         }
 
-        function viewEventDialog() {
+        const viewEventDialog = () => {
             if (currentEvent) {
                 return (
-                    <ViewEventDialog onDelete={that.eventDeleted} event={currentEvent} onCancel={that.closeViewEventDialog} />
+                    <ViewEventDialog event={currentEvent} onDelete={this.eventDeleted} onEdit={this.openEditDialog}  onCancel={this.closeViewEventDialog} />
                 );
             }
         }
 
-        function addEventDialog() {
+        const addEventDialog = () => {
             if (addEventDialogOpen) {
                 return (
-                    <AddEventDialog onEventAdded={that.eventAdded} onCancel={that.closeAddEventDialog} />
+                    <AddEventDialog onEventAdded={this.eventAdded} onCancel={this.closeAddEventDialog} />
                 );
+            }
+
+            return (null);
+        }
+
+        const editEventDialog = () => {
+            if ( editEventDialogEvent ) {
+                return (
+                    <EditEventDialog event={editEventDialogEvent} onCancel={this.closeEditEventDialog} onEventUpdated={this.eventUpdated} />
+                )
             }
 
             return (null);
@@ -234,6 +282,7 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
                     {spinner()}
                     {viewEventDialog()}
                     {addEventDialog()}
+                    {editEventDialog()}
                     
                     <Fab onClick={this.openAddEventDialog} className="add-event" size="medium"  aria-label="Add Event" >
                         <AddIcon color="primary" />
@@ -247,7 +296,7 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
                     message="Event Added"
                     action={
                         <React.Fragment>
-                            <Button color="secondary" size="small" onClick={this.handleUndoAddEvent}>UNDO</Button>
+                            {/* <Button color="secondary" size="small" onClick={this.handleUndoAddEvent}>UNDO</Button> */}
                             <IconButton size="small" aria-label="close" color="secondary" onClick={this.handleCloseAddEventSnackbar}>
                                 <CloseIcon fontSize="small" />
                             </IconButton>
@@ -262,8 +311,23 @@ class Schedule extends React.Component<ScheduleProps, ScheduleState> {
                     message="Event Deleted"
                     action={
                         <React.Fragment>
-                            <Button color="secondary" size="small" onClick={this.handleUndoDeleteEvent}>UNDO</Button>
+                            {/* <Button color="secondary" size="small" onClick={this.handleUndoDeleteEvent}>UNDO</Button> */}
                             <IconButton size="small" aria-label="close" color="secondary" onClick={this.handleCloseDeleteEventSnackbar}>
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </React.Fragment>
+                    }
+                />
+
+                <Snackbar
+                    open={updateEventSnackbarOpen}
+                    autoHideDuration={6000}
+                    onClose={this.handleCloseUpdateEventSnackbar}
+                    message="Event Updated"
+                    action={
+                        <React.Fragment>
+                            {/* <Button color="secondary" size="small" onClick={this.handleUndoDeleteEvent}>UNDO</Button> */}
+                            <IconButton size="small" aria-label="close" color="secondary" onClick={this.handleCloseUpdateEventSnackbar}>
                                 <CloseIcon fontSize="small" />
                             </IconButton>
                         </React.Fragment>

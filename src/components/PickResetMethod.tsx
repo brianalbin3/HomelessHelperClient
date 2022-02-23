@@ -24,8 +24,8 @@ type PickResetMethodState = {
 }
 
 type PickResetMethodProps = {
-    location: any, // TODO: params
-    history: any // TODO: type
+    location: any,
+    history: any
 }
 
 enum PickResetMethodFailureType {

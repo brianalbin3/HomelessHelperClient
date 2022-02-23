@@ -30,7 +30,7 @@ type LoginState = {
 }
 
 type LoginProps = {
-    history: any // TODO: Fix this type
+    history: any
 }
 
 class Login extends React.Component<LoginProps, LoginState> {

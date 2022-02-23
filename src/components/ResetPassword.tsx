@@ -25,8 +25,8 @@ type ResetPasswordState = {
     passwordChangeSuccess: boolean
 }
 type ResetPasswordProps = {
-    location: any, // TODO: TYPE
-    history: any // TODO: Type
+    location: any,
+    history: any
 }
 
 enum ResetPasswordFailureType {

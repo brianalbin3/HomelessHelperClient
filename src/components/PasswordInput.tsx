@@ -52,7 +52,6 @@ class PasswordInput extends Component<PasswordInputProps, PasswordInputState> {
     }
 
     render() {
-        const { classes } = this.props;
         const { passwordIsMasked } = this.state;
 
         return (
